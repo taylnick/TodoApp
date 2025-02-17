@@ -1,7 +1,86 @@
 ﻿@page "/"
+@rendermode @(new InteractiveServerRenderMode(false))
+@inject ILocalStorageService LocalStorage
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Welcome to TODO</h1>
 
-Welcome to your new app.
+@if (items != null && items.Any())
+{
+    <h4>Up next we have:</h4>
+    <ul style="list-style:none">
+        @foreach (var item in items)
+        {
+            <li >
+                <input type="checkbox" @bind="item.IsCompleted" @onclick="StoreItems" />
+                @if (item.IsCompleted)
+                {
+                    <s>@item.Description</s>
+                }
+                else
+                {
+                    @item.Description
+                }
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Nothing pending! Let's fix that.</p>
+    <NewToDo OnNewItemAdded="CreateItem" />
+}
+
+@code {
+    // TODO: Create object to hold each todo item
+    // TODO: Set up local storage to persist a list of items
+    // TODO: Make sure local storage reads and writes
+    // TODO: Edit pages to reflect the todo app (One main page? Hold all uncompleted tasks and optionally display completed ones)
+    // TODO: Consider extra page for just viewing completed TODO's
+    // TODO: Functionality to create a new item
+    // TODO: Spice up UI to show checkbox
+    // TODO: Enable checkbox and set that functionality
+    // TODO: Edit UI to show completed tasks as strikethrough
+    // TODO: Add functionality for editing completed tasks
+    // TODO: Add functionality for deleting completed tasks
+
+    private string key = "items";
+    private List<Item>? items;
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     await LoadItems();
+    // }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            //Show little finding todo's thingie
+            await LoadItems();
+        }
+    }
+
+    private async Task LoadItems()
+    {
+        items = await LocalStorage.GetItemAsync<List<Item>>(key) ?? new List<Item>();
+        StateHasChanged();
+    }
+
+    private async Task StoreItems()
+    {
+        await LocalStorage.SetItemAsync<List<Item>>(key, items!);
+    }
+
+    private async Task CreateItem(Item newItem)
+    {
+        if (items == null)
+        {
+            items = new List<Item>();
+        }
+        items!.Add(newItem);
+        await StoreItems();
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,47 @@
+﻿@code {
+    [Parameter]
+    public EventCallback<Item> OnNewItemAdded { get; set; }
+
+    private string newItemDescription = string.Empty;
+
+    private async void HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(newItemDescription))
+        {
+            await AddNewItem();
+        }
+    }
+
+    private async Task AddNewItem()
+    {
+        var newItem = new Item { Description = newItemDescription };
+        // newItemDescription = string.Empty;
+        await OnNewItemAdded.InvokeAsync(newItem);
+    }
+
+    private void Cancel()
+    {
+        newItemDescription = string.Empty;
+    }
+}
+
+<div class="new-todo">
+    <input type="text" @bind="newItemDescription" @onkeypress="HandleKeyPress" placeholder="Enter new task . . " />
+    <button @onclick="Cancel">Cancel</button>
+</div>
+
+<style>
+    .new-todo {
+        display: flex;
+        align-items: center;
+    }
+
+    .new-todo input {
+        flex: 1;
+        margin-right: 10px;
+    }
+
+    .new-todo button {
+        padding: 5px 10px;
+    }
+</style>
