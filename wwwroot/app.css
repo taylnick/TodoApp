@@ -1,20 +1,37 @@
-/*Custom css*/
 ul.item-list {
     list-style: none;
-    display: table;
     width: 100%;
+    padding: 0;
+    margin: 0;
+    padding-bottom: 5px;
 }
 
 ul.item-list li {
     list-style: none;
-    display: table-row;
+    display: flex !important;
+    align-items: center;
+    width: 100%;
 }
 
-ul.item-list li span{
-   padding-right: 20%;
-   float: right;
+ul.item-list li left {
+    flex-grow: 1;
 }
 
+ul.item-list li right {
+    display: flex;
+    cursor: pointer;
+}
+
+ul.item-list .fa-pencil,
+ul.item-list .fa-trash {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.fa-pencil:hover {
+    color: forestgreen;
+    animation: shake 0.9s;
+}
 .fa-trash:hover {
     color: red;
     animation: shake 0.5s;
@@ -66,6 +83,9 @@ ul.item-list li span{
     }
 }
 
+.inline-editing {
+    width: 80%;
+}
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }

@@ -4,30 +4,39 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Welcome to TODO</h1>
+<h1>What ToDo, what ToDo indeed!</h1>
 <hr/>
 
 @if (items != null && items.Any())
 {
     <h4>Up next:</h4>
     <ul class="item-list">
-        @foreach (var item in items)
+        @foreach (var item in items.Where((i) => !i.IsCompleted))
         {
             <li>
-                <input type="checkbox" @bind="item.IsCompleted" @onclick="StoreItems" />
-                &nbsp;
-                @if (item.IsCompleted)
-                {
-                    <s> @item.Description</s>
-                }
-                else
-                {
-                    @item.Description
-                }
-                <span style="margin-right: auto; cursor: pointer;" @onclick="() => RemoveItem(item)">
-                    <i class="fa fa-trash" onmouseover=""></i>
-                </span>
+                <left>
+                    <input type="checkbox" @bind="item.IsCompleted" @onclick="StoreItems" />
+                    &nbsp;
 
+                    @if (item == editingItem)
+                    {
+                        <input class="inline-editing" type="text" @bind="item.Description" @onblur="() => SaveEdit(item)" @onkeypress="(KeyboardEventArgs e) => CheckForEnter(e, item)"/>
+                    }
+                    else
+                    {
+                        <span>@item.Description</span>
+                    }
+
+                </left>
+                <right>
+                    <span @onclick="() => EditItem(item)">
+                        <i class="fa fa-pencil"></i>
+                    </span>
+
+                    <span @onclick="() => RemoveItem(item)">
+                        <i class="fa fa-trash"></i>
+                    </span>
+                </right>
             </li>
         }
     </ul>
@@ -40,20 +49,9 @@ else
 }
 
 @code {
-    // TODO: Create object to hold each todo item
-    // TODO: Set up local storage to persist a list of items
-    // TODO: Make sure local storage reads and writes
-    // TODO: Edit pages to reflect the todo app (One main page? Hold all uncompleted tasks and optionally display completed ones)
-    // TODO: Consider extra page for just viewing completed TODO's
-    // TODO: Functionality to create a new item
-    // TODO: Spice up UI to show checkbox
-    // TODO: Enable checkbox and set that functionality
-    // TODO: Edit UI to show completed tasks as strikethrough
-    // TODO: Add functionality for editing completed tasks
-    // TODO: Add functionality for deleting completed tasks
-
     private string key = "items";
     private List<Item>? items = new List<Item>();
+    private Item? editingItem;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -90,5 +88,24 @@ else
         items!.Remove(item);
         await StoreItems();
         StateHasChanged();
+    }
+
+    private void EditItem(Item item)
+    {
+        editingItem = item;
+    }
+
+    private async Task SaveEdit(Item item)
+    {
+        editingItem = null;
+        await StoreItems();
+    }
+
+    private async void CheckForEnter(KeyboardEventArgs e, Item item)
+    {
+        if ((e.Key == "Enter" || e.Key == "NumpadEnter"))
+        {
+            await SaveEdit(item);
+        }
     }
 }

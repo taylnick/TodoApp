@@ -22,16 +22,10 @@
             await OnNewItemAdded.InvokeAsync(newItem);
         }
     }
-
-    private void Cancel()
-    {
-        newItemDescription = string.Empty;
-    }
 }
 
 <div class="new-todo">
     <input type="text" @bind="newItemDescription" @bind:event="oninput" @onkeypress="HandleKeyPress" placeholder="Enter new task . . " />
-    @* <button @onclick="Cancel">Cancel</button> *@
 </div>
 
 <style>
