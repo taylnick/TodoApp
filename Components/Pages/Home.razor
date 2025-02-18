@@ -1,6 +1,6 @@
 ﻿@page "/"
 @rendermode @(new InteractiveServerRenderMode(false))
-@inject ILocalStorageService LocalStorage
+@inherits TodoBase
 
 <PageTitle>Home</PageTitle>
 
@@ -46,66 +46,4 @@ else
 {
     <p>Nothing pending! Let's fix that.</p>
     <NewToDo OnNewItemAdded="CreateItem" />
-}
-
-@code {
-    private string key = "items";
-    private List<Item>? items = new List<Item>();
-    private Item? editingItem;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            //TODO: Show little loading animation
-            await LoadItems();
-        }
-    }
-
-    private async Task LoadItems()
-    {
-        items = await LocalStorage.GetItemAsync<List<Item>>(key) ?? new List<Item>();
-        StateHasChanged();
-    }
-
-    private async Task StoreItems()
-    {
-        await LocalStorage.SetItemAsync<List<Item>>(key, items!);
-    }
-
-    private async Task CreateItem(Item newItem)
-    {
-        if (items == null)
-        {
-            items = new List<Item>();
-        }
-        items!.Add(newItem);
-        await StoreItems();
-    }
-
-    private async Task RemoveItem(Item item)
-    {
-        items!.Remove(item);
-        await StoreItems();
-        StateHasChanged();
-    }
-
-    private void EditItem(Item item)
-    {
-        editingItem = item;
-    }
-
-    private async Task SaveEdit(Item item)
-    {
-        editingItem = null;
-        await StoreItems();
-    }
-
-    private async void CheckForEnter(KeyboardEventArgs e, Item item)
-    {
-        if ((e.Key == "Enter" || e.Key == "NumpadEnter"))
-        {
-            await SaveEdit(item);
-        }
-    }
 }

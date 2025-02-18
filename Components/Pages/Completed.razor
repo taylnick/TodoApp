@@ -1,0 +1,31 @@
+﻿@page "/completed"
+@rendermode InteractiveServer
+@inherits TodoBase
+
+<PageTitle>Completed</PageTitle>
+
+<h1>Completed tasks</h1>
+<hr/>
+
+@if (items != null && items.Any())
+{
+    <ul class="item-list">
+        @foreach (var item in items.Where((i) => i.IsCompleted))
+        {
+            <li>
+                <left>
+                    <input type="checkbox" @bind="item.IsCompleted" @onclick="StoreItems" />
+                    &nbsp;
+
+                    <span>@item.Description</span>
+                    
+                </left>
+                <right>
+                    <span @onclick="() => RemoveItem(item)">
+                        <i class="fa fa-trash"></i>
+                    </span>
+                </right>
+            </li>
+        }
+    </ul>
+}
