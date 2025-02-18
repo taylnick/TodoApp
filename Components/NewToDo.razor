@@ -6,17 +6,21 @@
 
     private async void HandleKeyPress(KeyboardEventArgs e)
     {
-        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(newItemDescription))
+        if ((e.Key == "Enter" || e.Key == "NumpadEnter"))
         {
             await AddNewItem();
+            newItemDescription = string.Empty;
+            StateHasChanged();
         }
     }
 
     private async Task AddNewItem()
     {
-        var newItem = new Item { Description = newItemDescription };
-        // newItemDescription = string.Empty;
-        await OnNewItemAdded.InvokeAsync(newItem);
+        if (!string.IsNullOrEmpty(newItemDescription))
+        {
+            var newItem = new Item { Description = newItemDescription };
+            await OnNewItemAdded.InvokeAsync(newItem);
+        }
     }
 
     private void Cancel()
@@ -26,8 +30,8 @@
 }
 
 <div class="new-todo">
-    <input type="text" @bind="newItemDescription" @onkeypress="HandleKeyPress" placeholder="Enter new task . . " />
-    <button @onclick="Cancel">Cancel</button>
+    <input type="text" @bind="newItemDescription" @bind:event="oninput" @onkeypress="HandleKeyPress" placeholder="Enter new task . . " />
+    @* <button @onclick="Cancel">Cancel</button> *@
 </div>
 
 <style>
